@@ -1,0 +1,42 @@
+clc;
+clear;
+close all;
+
+%% =========================
+%  SC CODE
+% =========================
+
+snr_sim_SC=zeros([length(snr_dB) nRx_max]);
+
+for j=1:nRx_max
+    for k=1:length(snr_dB)
+
+        h=randn(j,N)+(randn(j,N)*1i);
+        x_kron=kron(ones(nRx(j),1),x);
+        c_in=h.*x_kron;
+
+        y=awgn(c_in,snr_dB(k),'measured');
+
+        hPower = h.*conj(h);
+
+        [hMaxVal ,ind] = max(hPower,[],1);
+
+        hMaxValMat = kron(ones(nRx(j),1),hMaxVal);
+
+        y_rec = y(hPower==hMaxValMat);
+        hSel = h(hPower==hMaxValMat);
+
+        snr_sim_SC(k,j) = mean(hSel.*conj(hSel));
+
+    end
+end
+
+snr_sim_log_SC=10*log10(snr_sim_SC);
+
+figure
+plot(nRx,snr_sim_log_SC,'LineWidth',1.5)
+xlabel('Number of receive antennas')
+ylabel('SNR (dB)')
+title('Selection Combining (SC)')
+grid on
+

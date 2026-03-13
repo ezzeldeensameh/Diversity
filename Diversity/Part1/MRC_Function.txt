@@ -1,1 +1,50 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CODE 1
+% Receiver Diversity Techniques
+% MRC vs EGC vs SC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+clc;
+clear;
+close all;
+
+%% =========================
+%  MRC CODE
+% =========================
+
+N=10^3;
+data=randi([0,1],1,N);
+x=2*data-1;
+
+nRx_max=20;
+nRx=1:nRx_max;
+
+snr_dB=1:5;
+
+snr_sim_MRC=zeros([length(snr_dB) nRx_max]);
+
+for j=1:nRx_max
+    for k=1:length(snr_dB)
+
+        h=randn(j,N)+(randn(j,N)*1i);
+        x_kron=kron(ones(nRx(j),1),x);
+        c_in=h.*x_kron;
+
+        y=awgn(c_in,snr_dB(k),'measured');
+
+        y_rec=sum(conj(h).*y,1);
+
+        snr_sim_MRC(k,j)=mean(abs(y_rec));
+
+    end
+end
+
+snr_sim_log_MRC=10*log10(snr_sim_MRC);
+
+figure
+plot(nRx,snr_sim_log_MRC,'LineWidth',1.5)
+xlabel('Number of receive antennas')
+ylabel('SNR (dB)')
+title('Maximal Ratio Combining (MRC)')
+grid on
 

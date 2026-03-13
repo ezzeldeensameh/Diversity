@@ -1,0 +1,59 @@
+clc;
+clear;
+close all;
+
+%% =========================
+%  COMPARISON GRAPH
+% =========================
+
+MRC_avg = mean(snr_sim_log_MRC,1);
+EGC_avg = mean(snr_sim_log_EGC,1);
+SC_avg  = mean(snr_sim_log_SC,1);
+
+figure
+
+plot(nRx,MRC_avg,'m','LineWidth',3)
+hold on
+plot(nRx,EGC_avg,'Color',[1 0.5 0],'LineWidth',3)
+plot(nRx,SC_avg,'k','LineWidth',3)
+
+legend('MRC','EGC','SC','Location','southeast')
+
+xlabel('Number of Receiver Antennas')
+ylabel('SNR (dB)')
+title('MRC - EGC - SC: SNR Versus No. of Receiver Antennas')
+
+grid on
+
+
+%% =========================
+%  TABLE VALUES
+% =========================
+
+max_MRC = max(MRC_avg);
+mean_MRC = mean(MRC_avg);
+
+max_EGC = max(EGC_avg);
+mean_EGC = mean(EGC_avg);
+
+max_SC = max(SC_avg);
+mean_SC = mean(SC_avg);
+
+table_data = {
+'MRC', sprintf('%.4f',max_MRC), sprintf('%.4f',mean_MRC);
+'EGC', sprintf('%.4f',max_EGC), sprintf('%.4f',mean_EGC);
+'SC',  sprintf('%.4f',max_SC),  sprintf('%.4f',mean_SC);
+};
+
+column_name = {'Technique','Max SNR (dB)','Mean SNR (dB)'};
+
+
+%% =========================
+%  SMALL COMPARISON TABLE
+% =========================
+
+uitable('Data',table_data,...
+        'ColumnName',column_name,...
+        'Position',[45 25 340 90],...
+        'FontSize',9,...
+        'ColumnWidth',{90 120 120});

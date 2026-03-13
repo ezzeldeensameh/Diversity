@@ -1,0 +1,36 @@
+clc;
+clear;
+close all;
+
+%% =========================
+%  EGC CODE
+% =========================
+
+snr_sim_EGC=zeros([length(snr_dB) nRx_max]);
+
+for j=1:nRx_max
+    for k=1:length(snr_dB)
+
+        h=randn(j,N)+(randn(j,N)*1i);
+        x_kron=kron(ones(nRx(j),1),x);
+        c_in=h.*x_kron;
+
+        y=awgn(c_in,snr_dB(k),'measured');
+
+        y_rec = y.*exp(-1i*angle(h));
+        y_rec = sum(y_rec,1);
+
+        snr_sim_EGC(k,j) = mean(y_rec.*conj(y_rec))/nRx(j);
+
+    end
+end
+
+snr_sim_log_EGC=10*log10(snr_sim_EGC);
+
+figure
+plot(nRx,snr_sim_log_EGC,'LineWidth',1.5)
+xlabel('Number of receive antennas')
+ylabel('SNR (dB)')
+title('Equal Gain Combining (EGC)')
+grid on
+
